@@ -1,0 +1,49 @@
+[
+    {
+        "name": "Admin",
+        "id": 1,
+        "permissions": [
+            {
+                "name": "Create User",
+                "type": "create_user"
+            },
+            {
+                "name": "Update User",
+                "type": "update_user"
+            },
+            {
+                "name": "View Users",
+                "type": "view_users"
+            },
+            {
+                "name": "View User By Id",
+                "type": "view_single_user"
+            }
+        ]
+    },{
+        "name": "Super Admin",
+        "id": 2,
+        "permissions": [
+            {
+                "name": "Create User",
+                "type": "create_user"
+            },
+            {
+                "name": "Update User",
+                "type": "update_user"
+            },
+            {
+                "name": "View Users",
+                "type": "view_users"
+            },
+            {
+                "name": "View User By Id",
+                "type": "view_single_user"
+            },
+            {
+                "name": "Delete User",
+                "type": "delete_user"
+            }
+        ]
+    }
+]

@@ -1,0 +1,49 @@
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "start:dev": "npx nodemon",
+    "build": "rimraf ./build && tsc",
+    "start": "npm run build && node build/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint:fix": "eslint 'src/**' --ext .js,.ts --fix",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "db:generate": "npm run typeorm migration:revert -- -d src/core/datasource.ts && npm run typeorm migration:run -- -d src/core/datasource.ts",
+    "miagration": "ts-node ./node_modules/typeorm/cli.js migration:run"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/mysql": "^2.15.21",
+    "@types/node": "^20.4.0",
+    "eslint": "^8.43.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "nodemon": "^2.0.22",
+    "rimraf": "^5.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@google-cloud/spanner": "^5.18.0",
+    "axios": "^1.4.0",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "fastest-validator": "^1.17.0",
+    "fs": "^0.0.1-security",
+    "html": "^1.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "mysql": "^2.18.1",
+    "path": "^0.12.7",
+    "pg": "^8.11.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.17",
+    "typeorm-extension": "^2.8.1"
+  }
+}
