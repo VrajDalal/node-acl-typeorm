@@ -1,15 +1,22 @@
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Roles } from "./role.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Permissions {
+  @PrimaryGeneratedColumn('uuid')
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id!: number;
+  @Column({ type: 'varchar', length: 30 })
+  name: string;
 
-    @Column({ type: 'varchar', length: 30 })
-    name!: string;
+  @CreateDateColumn()
+  created_at: Date;
 
-    // @ManyToOne(() => Roles, roles => roles.permission)
-    // role!: Roles;
+  @UpdateDateColumn()
+  updated_at: Date;
 }

@@ -1,25 +1,38 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinColumn, JoinTable } from "typeorm";
-import { Roles } from "./role.entity";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  JoinTable,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+} from 'typeorm';
+import { Roles } from './role.entity';
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn("uuid")
-    id!: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column({ type: "varchar", length: 100 })
-    name!: string;
+  @Column({ type: 'varchar', length: 100 })
+  name: string;
 
-    @Column({ type: "varchar", length: 100, unique: true })
-    email!: string;
+  @Column({ type: 'varchar', length: 100, unique: true })
+  email: string;
 
-    @Column({ type: "varchar", length: 100 })
-    password!: string;
+  @Column({ type: 'varchar', length: 100 })
+  password: string;
 
-    @Column()
-    mobile_no!: number;
+  @Column({ type: 'varchar', default: null })
+  mobile_no: number;
 
-    @ManyToMany(() => Roles)
-    @JoinTable({ name: 'users_roles', joinColumns: [{ name: 'user_id' }], inverseJoinColumns: [{ name: 'role_id' }] })
-    roles!: Roles[];
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
+
+  @ManyToOne(() => Roles)
+  roles: Roles[];
 }
-
