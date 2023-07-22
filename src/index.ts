@@ -49,3 +49,11 @@ app.listen(port, () => {
 // DELETE_USER = "delete_user"
 //user table relation => ManyToOne with role table
 //role table relation => OneToMany with user table
+
+/*
+1.create  all permission api
+2. create,update,get,delete permission
+3. role api merge
+*/
+
+//create by default user role in Auth

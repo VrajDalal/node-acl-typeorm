@@ -14,6 +14,7 @@ import { datasource } from "../core/datasource"
 import { User } from "../entity/user.entity"
 import { Roles } from "../entity/role.entity"
 import { Permissions } from "../entity/permission.entity"
+import { ROLE } from "./enum"
 
 export class Auth {
 	// public static validateDatabase = async () => {
@@ -48,6 +49,63 @@ export class Auth {
 		}
 	}
 	//guard
+
+	public static async validateRole2(
+		requiredPermission: any = {}
+	): Promise<(req: Request, res: Response, next: NextFunction) => void> {
+		const v: Validator = new Validator();
+		return async (req: Request, res: Response, next: NextFunction) => {
+			const headerAuth = req.headers.authorization;
+			if (!headerAuth) {
+				return res.status(400).json({
+					message: 'invalid token',
+				});
+			}
+			const replaceHeaders = headerAuth.replace('Bearer ', '');
+			//Decode JWT => from USER DATA
+			const decoded: any = jwt.decode(replaceHeaders);
+			const roleId = decoded.found.role.id;
+			try {
+				const roleFind = await datasource.getRepository(Roles).findOne({
+					relations: {
+						permission: true
+					},
+					where: {
+						id: roleId
+					}
+				})
+				console.log(roleFind)
+				// const found = roleFind.find((role:any) => decodedRole === roleFinder)
+				if (roleFind) {
+
+					const findPermission = roleFind.permission.some((permission: any) => permission.name === requiredPermission);
+					console.log(findPermission)
+					if (findPermission) {
+						next
+					} else {
+						res.status(403).send({
+							code: 403,
+							message: "You don't have enough permission",
+						})
+					}
+				} else {
+					res.status(400).send({
+						code: 400,
+						message: "Invalid Role",
+					})
+				}
+			} catch (error: any) {
+				res.status(500).send({
+					code: 500,
+					message: error.message,
+					stack: error.stack,
+					error: error
+				})
+			}
+		};
+	}
+
+
 	public static validateRole = async (req: Request, res: Response, next: NextFunction, requiredPermission: string) => {
 		//Get JWT From Headers
 		//check null or not if not than replace bearer with blank string
@@ -59,35 +117,40 @@ export class Auth {
 			})
 		}
 		const replaceHeaders = headerAuth.replace('Bearer ', '')
+		// console.log(replaceHeaders)
 		//Decode JWT => from USER DATA
 		const decoded: any = jwt.decode(replaceHeaders)
-		const roleId = decoded.found.role.id
-		// console.log(d);
+		// console.log(decoded)
+		const roleId = decoded.found.roles.id
+		// console.log(roleId);
 		//Find Role from role table -> Invalid Role
 		try {
-			const roleFind = await datasource.getRepository(Roles).findOneBy({
-				id: roleId
+			const roleFind = await datasource.getRepository(Roles).findOne({
+				relations: {
+					permission: true
+				},
+				where: {
+					id: roleId
+				}
 			})
+			console.log(roleFind)
 			// const found = roleFind.find((role:any) => decodedRole === roleFinder)
 			if (roleFind) {
-				const getPermission = await datasource.getRepository(Permissions).findBy({
-					// roles: roleId
-				})
-				// console.log(permission)
-				const findPermission = getPermission.find((permission: any) => permission.name === requiredPermission);
-				// console.log(findPermission)
+
+				const findPermission = roleFind.permission.some((permission: any) => permission.name === requiredPermission);
+				console.log(findPermission)
 				if (findPermission) {
 					next
 				} else {
-					res.status(400).send({
-						code: 400,
-						message: 'You dont have enough permission to view this resource',
+					res.status(403).send({
+						code: 403,
+						message: "You don't have enough permission",
 					})
 				}
 			} else {
 				res.status(400).send({
 					code: 400,
-					message: 'Invalide Role',
+					message: "Invalid Role",
 				})
 			}
 		} catch (error: any) {
@@ -99,32 +162,72 @@ export class Auth {
 			})
 		}
 	}
-	// const read = fs.readFileSync('./assets/role.json', { encoding: 'utf8', flag: 'r' })
-	// if (read && decoded) {
-	// 	const data = JSON.parse(read)
-	// 	if (data.length > 0) {
-	// 		const found = data.find((datas: any) => decoded.role === datas.id)
-	// 		// console.log(found);
-	// 		if (found) {
-	// 			const validPermission = found.permissions.find((permission: any) => permission.type == requiredPermission)
-	// 			// console.log(validPermission)
-	// 			if (validPermission) {
-	// 				(next)
-	// 			} else {
-	// 				return res.status(400).json({
-	// 					message: 'you dont have access to the resource'
-	// 				})
-	// 			}
-	// 		} else {
-	// 			return res.status(400).json({
-	// 				message: 'invalid role'
-	// 			})
-	// 		}
-	// 	}
-	// }
-	//Get Permission from role table
-	//Fine requiredPermission exist on permission from role.json -> Error messsage
-}
 
+	public static is(requiredPermission: string) {
+		const authorizedRole = async (
+			req: Request,
+			res: Response,
+			next: NextFunction
+		) => {
+			//Get JWT From Headers
+			//check null or not if not than replace bearer with blank string
+			const headerAuth = req.headers.authorization;
+			// console.log(headerAuth);
+			if (!headerAuth) {
+				return res.status(400).json({
+					message: 'invalid token',
+				});
+			}
+			const replaceHeaders = headerAuth.replace('Bearer ', '');
+			// console.log(replaceHeaders)
+			//Decode JWT => from USER DATA
+			const decoded: any = jwt.decode(replaceHeaders);
+			// console.log(decoded)
+			const roleId = decoded.found.roles.id;
+			// console.log(roleId);
+			//Find Role from role table -> Invalid Role
+			try {
+				const roleFind = await datasource.getRepository(Roles).findOne({
+					relations: {
+						permission: true,
+					},
+					where: {
+						id: roleId,
+					},
+				});
+				console.log(roleFind);
+				// const found = roleFind.find((role:any) => decodedRole === roleFinder)
+				if (roleFind) {
+					const findPermission = roleFind.permission.some(
+						(permission: any) => permission.name === requiredPermission
+					);
+					console.log(findPermission);
+					if (findPermission) {
+						next;
+					} else {
+						res.status(403).send({
+							code: 403,
+							message: "You don't have enough permission",
+						});
+					}
+				} else {
+					res.status(400).send({
+						code: 400,
+						message: 'Invalid Role',
+					});
+				}
+			} catch (error: any) {
+				res.status(500).send({
+					code: 500,
+					message: error.message,
+					stack: error.stack,
+					error: error,
+				});
+			}
+		};
+
+		return authorizedRole;
+	}
+}
 
 

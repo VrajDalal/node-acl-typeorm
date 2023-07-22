@@ -2,16 +2,20 @@ import fs, { lstat } from "fs"
 import jwt from "jsonwebtoken"
 import { genrateString } from "../utils/system-helper";
 import { Auth } from "../utils/auth";
-import { IForgetUser, ILoginUser, IRegisterUser } from "../utils/interface/auth.interface";
+import { IForgetUser, ILoginUser, IRegisterUser } from "../utils/interface/user.auth.interface";
 import { datasource } from "../core/datasource";
 import { User } from "../entity/user.entity";
 import { Request, Response } from "express";
 import { EnvironmentVariableName, findDataSource } from "typeorm-extension";
+import { Roles } from "../entity/role.entity";
 
 
 export class authHelper {
     public static loginUser = async (payload: ILoginUser) => {
         const users = await datasource.getRepository(User).find({
+            relations: {
+                roles: true
+            }
         })
         const email = payload.email
         const password = payload.password
@@ -100,15 +104,40 @@ export class authHelper {
         // }
     }
     public static registerUser = async (payload: IRegisterUser) => {
-
-        const users = await datasource.getRepository(User).create(payload)
+        const userRepository = await datasource.getRepository(User);
+        const roleRepository = await datasource.getRepository(Roles);
         try {
+            const userData = await userRepository.findOneBy({ email: payload.email });
+            // console.log(userData)
+            if (userData) {
+                return {
+                    message: 'Email already exists!',
+                };
+            }
+            const existingRole = await roleRepository.findOneBy({
+                id: payload.roles,
+            });
+            if (!existingRole) {
+                return {
+                    message: 'Invalid Role!',
+                };
+            }
+            // console.log(existingRole);
+            delete payload.roles;
+            const userPayload: any = {
+                ...payload,
+                roles: existingRole,
+            };
+            // console.log(userPayload);
+            const users = await datasource.getRepository(User).create(userPayload)
+
             const result = await datasource.getRepository(User).save(users)
             return result
-        } catch {
+        } catch (err: any) {
             return {
-                message: 'email_id already exists'
-            }
+                message: err.message,
+                stack: err.stack,
+            };
         }
         // await Auth.validateDatabase()
 

@@ -22,6 +22,7 @@ export interface IUpdateUser extends ICreateUser { }
 
 export interface IDeleteUser extends IRegisterUser { }
 
+
 export interface IAddress {
     city: string,
     state: string,

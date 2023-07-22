@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { authHelper } from "../helper/auth.helper";
 import { Auth } from "../utils/auth";
-import { IForgetUser, ILoginUser, IRegisterUser } from "../utils/interface/auth.interface";
+import { IForgetUser, ILoginUser, IRegisterUser } from "../utils/interface/user.auth.interface";
 
 export const loginUserData = async (req: Request, res: Response) => {
     const payload = Auth.getRequestParams(req) as ILoginUser;

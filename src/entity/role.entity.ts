@@ -12,7 +12,7 @@ import { Permissions } from './permission.entity';
 @Entity()
 export class Roles {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column()
   name: string;
@@ -29,5 +29,5 @@ export class Roles {
     joinColumns: [{ name: 'role_id' }],
     inverseJoinColumns: [{ name: 'permission_id' }],
   })
-  permission: Permissions;
+  permission: Permissions[];
 }
