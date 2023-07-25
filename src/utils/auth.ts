@@ -3,16 +3,17 @@ import Validator, { ValidationError } from 'fastest-validator';
 import Jwt from 'jsonwebtoken';
 import { datasource } from '../core/datasource';
 import { Roles } from '../entity/role.entity';
+import AppError from './app_error';
 
 export class Auth {
-
   public static getRequestParams = (req: Request) => {
     const { body, query, params } = req;
     return { ...body, ...query, ...params };
   };
   //middleware
-  public static validateSchema(reqSchema: any = {}):
-    (req: Request, res: Response, next: NextFunction) => void {
+  public static validateSchema(
+    reqSchema: any = {}
+  ): (req: Request, res: Response, next: NextFunction) => void {
     const v: Validator = new Validator();
     return (req: Request, res: Response, next: NextFunction) => {
       const validate = v.compile(reqSchema);
@@ -32,25 +33,27 @@ export class Auth {
   }
   //guard
 
-  public static validateRole = async (req: Request, res: Response, next: NextFunction, requiredPermission: string) => {
-    //Get JWT From Headers
-    //check null or not if not than replace bearer with blank string
-    const headerAuth = req.headers.authorization;
-    // console.log(headerAuth);
-    if (!headerAuth) {
-      return res.status(400).json({
-        message: 'invalid token',
-      });
-    }
-    const replaceHeaders = headerAuth.replace('Bearer ', '');
-    // console.log(replaceHeaders)
-    //Decode JWT => from USER DATA
-    const decoded: any = Jwt.decode(replaceHeaders);
-    // console.log(decoded)
-    const roleId = decoded.found.roles.id;
-    // console.log(roleId);
-    //Find Role from role table -> Invalid Role
+  public static validateRole = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    requiredPermission: string
+  ) => {
     try {
+      const headerAuth = req.headers.authorization;
+      if (!headerAuth) {
+        return next(new AppError(401, 'You are not logged in'));
+      }
+      console.log('called');
+      const replaceHeaders = headerAuth.replace('Bearer ', '');
+      const decoded: any = Jwt.decode(replaceHeaders);
+
+      if (!decoded) {
+        return next(new AppError(401, `Invalid token or user doesn't exist`));
+      }
+
+      const roleId = decoded.found.roles.id;
+
       const roleFind = await datasource.getRepository(Roles).findOne({
         relations: {
           permission: true,
@@ -59,37 +62,67 @@ export class Auth {
           id: roleId,
         },
       });
-      // console.log(roleFind);
-      // const found = roleFind.find((role:any) => decodedRole === roleFinder)
       if (roleFind) {
         const findPermission = roleFind.permission.some(
           (permission: any) => permission.name === requiredPermission
         );
-        // console.log(findPermission);
         if (findPermission) {
-          (next)
+          next();
         } else {
-          res.status(403).json({
-            code: 403,
-            message: "You don't have enough permission",
-          });
+          return next(new AppError(401, `You don't have permission`));
         }
       } else {
-        res.status(403).json({
-          code: 403,
-          message: 'Invalid Role',
-        });
+        return next(new AppError(401, `Invalid role`));
       }
     } catch (error: any) {
-      res.status(500).json({
-        code: 500,
-        message: error.message,
-        stack: error.stack,
-        error: error,
-      });
+      next(error);
     }
   };
 
-  public static defaultUser = async (req: Request, res: Response, next: NextFunction, requiredPermission: string) => {
+  public static is(requiredPermission: string) {
+    const authorizedRole = async (
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ) => {
+      try {
+        const headerAuth = req.headers.authorization;
+        if (!headerAuth) {
+          return next(new AppError(401, 'You are not logged in'));
+        }
+        const replaceHeaders = headerAuth.replace('Bearer ', '');
+        const decoded: any = Jwt.decode(replaceHeaders);
+
+        if (!decoded) {
+          return next(new AppError(401, `Invalid token or user doesn't exist`));
+        }
+
+        const roleId = decoded.found.roles.id;
+
+        const roleFind = await datasource.getRepository(Roles).findOne({
+          relations: {
+            permission: true,
+          },
+          where: {
+            id: roleId,
+          },
+        });
+        if (roleFind) {
+          const findPermission = roleFind.permission.some(
+            (permission: any) => permission.name === requiredPermission
+          );
+          if (findPermission) {
+            next();
+          } else {
+            return next(new AppError(401, `You don't have permission`));
+          }
+        } else {
+          return next(new AppError(401, `Invalid role`));
+        }
+      } catch (error: any) {
+        next(error);
+      }
+    };
+    return authorizedRole;
   }
 }

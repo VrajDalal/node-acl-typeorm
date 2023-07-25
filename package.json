@@ -11,7 +11,8 @@
     "lint:fix": "eslint 'src/**' --ext .js,.ts --fix",
     "typeorm": "typeorm-ts-node-commonjs",
     "db:generate": "npm run typeorm migration:revert -- -d src/core/datasource.ts && npm run typeorm migration:run -- -d src/core/datasource.ts",
-    "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run"
+    "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
+    "db:seed": "npm run db.seed"
   },
   "author": "",
   "license": "ISC",

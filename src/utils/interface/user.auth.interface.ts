@@ -3,7 +3,7 @@ export interface IRegisterUser {
     email: string,
     password: string,
     mobile_no: number,
-    roles: any,
+    roles: any, //FIXME: Remove Role from here
     address: IAddress,
 }
 
