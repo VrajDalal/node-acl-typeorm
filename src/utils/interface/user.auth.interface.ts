@@ -1,5 +1,4 @@
 export interface IRegisterUser {
-    id?: string,
     name: string,
     email: string,
     password: string,
@@ -9,7 +8,6 @@ export interface IRegisterUser {
 }
 
 export interface ICreateUser {
-    id?: string,
     name: string,
     email: string,
     password: string,
@@ -18,9 +16,15 @@ export interface ICreateUser {
     address: IAddress,
 }
 
-export interface IUpdateUser extends ICreateUser { }
+export interface IGetUser {
+    id?: string
+}
 
-export interface IDeleteUser extends IRegisterUser { }
+export interface IUpdateUser extends ICreateUser, IGetUser { }
+
+export interface IDeleteUser {
+    id: string
+}
 
 
 export interface IAddress {

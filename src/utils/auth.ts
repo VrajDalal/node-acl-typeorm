@@ -1,37 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import Validator, { ValidationError } from 'fastest-validator';
-import fs from 'fs';
-import jwt, { DecodeOptions } from 'jsonwebtoken';
-import { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
-import { NetConnectOpts } from 'net';
-import { authHelper } from '../helper/auth.helper';
-import { userHelper } from '../helper/user.helper';
-import { decode } from 'punycode';
-import { json } from 'stream/consumers';
-import { error } from 'console';
-import { promises } from 'dns';
+import Jwt from 'jsonwebtoken';
 import { datasource } from '../core/datasource';
-import { User } from '../entity/user.entity';
 import { Roles } from '../entity/role.entity';
-import { Permissions } from '../entity/permission.entity';
-import { ROLE } from './enum';
 
 export class Auth {
-  // public static validateDatabase = async () => {
-  // 	const exists = await fs.existsSync('./assets/user.json')
-  // 	if (!exists) {
-  // 		await fs.writeFileSync('./assets/user.json', '[]')
-  // 	}
-  // }
 
   public static getRequestParams = (req: Request) => {
     const { body, query, params } = req;
     return { ...body, ...query, ...params };
   };
   //middleware
-  public static validateSchema(
-    reqSchema: any = {}
-  ): (req: Request, res: Response, next: NextFunction) => void {
+  public static validateSchema(reqSchema: any = {}):
+    (req: Request, res: Response, next: NextFunction) => void {
     const v: Validator = new Validator();
     return (req: Request, res: Response, next: NextFunction) => {
       const validate = v.compile(reqSchema);
@@ -40,7 +21,7 @@ export class Auth {
         next();
       } else {
         const error = validateResponce as ValidationError[];
-        res.status(400).send({
+        res.status(400).json({
           code: 400,
           message: 'Invalide Request Paramas',
           type: 'E_BAD_REQUEST_PARAMS',
@@ -51,12 +32,7 @@ export class Auth {
   }
   //guard
 
-  public static validateRole = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-    requiredPermission: string
-  ) => {
+  public static validateRole = async (req: Request, res: Response, next: NextFunction, requiredPermission: string) => {
     //Get JWT From Headers
     //check null or not if not than replace bearer with blank string
     const headerAuth = req.headers.authorization;
@@ -69,7 +45,7 @@ export class Auth {
     const replaceHeaders = headerAuth.replace('Bearer ', '');
     // console.log(replaceHeaders)
     //Decode JWT => from USER DATA
-    const decoded: any = jwt.decode(replaceHeaders);
+    const decoded: any = Jwt.decode(replaceHeaders);
     // console.log(decoded)
     const roleId = decoded.found.roles.id;
     // console.log(roleId);
@@ -83,15 +59,15 @@ export class Auth {
           id: roleId,
         },
       });
-      console.log(roleFind);
+      // console.log(roleFind);
       // const found = roleFind.find((role:any) => decodedRole === roleFinder)
       if (roleFind) {
         const findPermission = roleFind.permission.some(
           (permission: any) => permission.name === requiredPermission
         );
-        console.log(findPermission);
+        // console.log(findPermission);
         if (findPermission) {
-          next;
+          (next)
         } else {
           res.status(403).json({
             code: 403,
@@ -99,8 +75,8 @@ export class Auth {
           });
         }
       } else {
-        res.status(400).json({
-          code: 400,
+        res.status(403).json({
+          code: 403,
           message: 'Invalid Role',
         });
       }
@@ -113,4 +89,7 @@ export class Auth {
       });
     }
   };
+
+  public static defaultUser = async (req: Request, res: Response, next: NextFunction, requiredPermission: string) => {
+  }
 }

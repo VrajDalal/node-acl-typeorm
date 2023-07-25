@@ -7,14 +7,25 @@ import { Permissions } from "../entity/permission.entity";
 
 export class UserRole {
     public static getRoles = async (requestParam: ICreateRole) => {
-        const role = await datasource.getRepository(Roles).find({})
+        const role = await datasource.getRepository(Roles).find({
+            relations: {
+                permission: true
+            }
+        })
         return role
     }
 
     public static getRolesById = async (requestParam: ICreateRole, res: Response) => {
 
         try {
-            const role = await datasource.getRepository(Roles).findOneBy({ id: requestParam.id })
+            const role = await datasource.getRepository(Roles).find({
+                relations: {
+                    permission: true
+                }, where: {
+                    id: requestParam.id
+                }
+            })
+            // const role = await datasource.getRepository(Roles).findOneBy({ id: requestParam.id })
             if (role) {
                 return role
             } else {
@@ -23,7 +34,7 @@ export class UserRole {
                 }
             }
         } catch (err: any) {
-            res.status(500).send({
+            res.status(500).json({
                 message: err.message,
                 stack: err.stack
             })
@@ -52,7 +63,7 @@ export class UserRole {
             const result = await datasource.getRepository(Roles).save(role)
             return result;
         } catch (err: any) {
-            res.status(500).send({
+            res.status(500).json({
                 message: err.message,
                 stack: err.stack
             })
@@ -62,8 +73,9 @@ export class UserRole {
 
     public static updateRole = async (requestParam: IUpdateRole, res: Response) => {
         try {
-            const role = await datasource.getRepository(Roles).findOneBy({ id: requestParam.id })
-            // console.log(role)
+            const role = await datasource.getRepository(Roles).findOneBy({
+                id:requestParam.id
+            })
             if (role) {
                 delete requestParam.id
                 datasource.getRepository(Roles).merge(role, requestParam)
@@ -75,7 +87,7 @@ export class UserRole {
                 }
             }
         } catch (err: any) {
-            res.status(500).send({
+            res.status(500).json({
                 message: err.message,
                 stack: err.stack
             })
@@ -95,7 +107,7 @@ export class UserRole {
                 }
             }
         } catch (err: any) {
-            res.status(500).send({
+            res.status(500).json({
                 message: err.message,
                 stack: err.stac
             })

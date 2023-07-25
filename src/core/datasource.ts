@@ -13,4 +13,9 @@ export const datasource = new DataSource({
   migrations: ['src/migration/*.ts'],
   migrationsRun: true,
   migrationsTableName: 'custom_migration_table',
+  extra: {
+    ssl: {
+      rejectUnauthorized: false
+    }
+  }
 });

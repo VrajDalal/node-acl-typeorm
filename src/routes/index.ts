@@ -18,7 +18,7 @@ import {
   LoginSchema,
   RegisterSchema,
 } from '../validation-schemas/auth.schema';
-import { CreaterUserSchema } from '../validation-schemas/auth.schema';
+import { CreaterUserSchema, GetUserById, UpdateUserSchema } from '../validation-schemas/user.schema';
 import {
   createRoleData,
   deleteRoleById,
@@ -33,6 +33,8 @@ import {
   getPermissionsData,
   updatePermissionData,
 } from '../handler/permission';
+import { ROLE } from '../utils/enum';
+import { DeleteUserSchema } from '../validation-schemas/user.schema';
 
 const router: Router = Router();
 
@@ -41,43 +43,27 @@ router.get(apiEndPoint.user, async (req, res, next) => {
   await getUsersList(req, res, next);
 });
 
-router.get(apiEndPoint.userById, async (req, res, next) => {
+router.get(apiEndPoint.userById, Auth.validateSchema(GetUserById), async (req, res, next) => {
   await getUserById(req, res, next);
 });
 
-router.post(
-  apiEndPoint.register,
-  Auth.validateSchema(RegisterSchema),
-  async (req, res) => {
-    await registerUserData(req, res);
-  }
-);
+router.post(apiEndPoint.register, Auth.validateSchema(RegisterSchema), async (req, res, next) => {
+  await registerUserData(req, res, next);
+});
 
-router.post(
-  apiEndPoint.login,
-  Auth.validateSchema(LoginSchema),
-  async (req, res) => {
-    await loginUserData(req, res);
-  }
-);
+router.post(apiEndPoint.login, Auth.validateSchema(LoginSchema), async (req, res, next) => {
+  await loginUserData(req, res, next);
+});
 
-router.post(
-  apiEndPoint.forget,
-  Auth.validateSchema(ForgetPasswordSchema),
-  async (req, res) => {
-    await forgetPasswordData(req, res);
-  }
-);
+router.post(apiEndPoint.forget, Auth.validateSchema(ForgetPasswordSchema), async (req, res, next) => {
+  await forgetPasswordData(req, res, next);
+});
 
-router.post(
-  apiEndPoint.user,
-  Auth.validateSchema(CreaterUserSchema),
-  async (req, res, next) => {
-    await createUserData(req, res, next);
-  }
-);
+router.post(apiEndPoint.user, Auth.validateSchema(CreaterUserSchema), async (req, res, next) => {
+  await createUserData(req, res, next);
+});
 
-router.put(apiEndPoint.userById, async (req, res, next) => {
+router.put(apiEndPoint.userById, Auth.validateSchema(UpdateUserSchema), async (req, res, next) => {
   await updateUserData(req, res, next);
 });
 
@@ -126,4 +112,5 @@ router.put(apiEndPoint.permissionById, async (req, res, next) => {
 router.delete(apiEndPoint.permissionById, async (req, res, next) => {
   await deletePermissionData(req, res, next);
 });
+
 export default router;

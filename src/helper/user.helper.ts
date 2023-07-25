@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { NextFunction, Request, Response } from 'express';
-import { ICreateUser, IDeleteUser, IUpdateUser } from '../utils/interface/user.auth.interface';
+import { ICreateUser, IDeleteUser, IGetUser, IUpdateUser } from '../utils/interface/user.auth.interface';
 import { Auth } from '../utils/auth';
 import { User } from '../entity/user.entity';
 import { Roles } from '../entity/role.entity';
@@ -8,12 +8,12 @@ import { datasource } from '../core/datasource';
 
 //create new user
 export class userHelper {
-  public static getUsers = async (requestParam: ICreateUser) => {
+  public static getUsers = async () => {
     const user = await datasource.getRepository(User).find({ relations: { roles: true } });
     return user
   }
 
-  public static getUser = async (requestParam: ICreateUser, res: Response) => {
+  public static getUser = async (requestParam: IGetUser, res: Response) => {
     try {
       const user = await datasource.getRepository(User).findOneBy({ id: requestParam.id });
       console.log(user)
@@ -25,7 +25,7 @@ export class userHelper {
         }
       }
     } catch (err: any) {
-      res.status(500).send({
+      res.status(500).json({
         message: err.message,
         stack: err.stack
       })
@@ -71,12 +71,10 @@ export class userHelper {
   };
 
   public static updateUser = async (requestParam: IUpdateUser, res: Response) => {
-    // const payload = req.body
-    // console.log(payload)
     const user: any = await datasource.getRepository(User).findOneBy({ id: requestParam.id });
     // console.log(user)
     if (user) {
-      delete requestParam.id && requestParam.email
+      delete requestParam.id
       datasource.getRepository(User).merge(user, requestParam);
       // console.log(merger)
       const result = await datasource.getRepository(User).save(user);
@@ -90,15 +88,24 @@ export class userHelper {
   }
 
   public static deleteUser = async (requestParam: IDeleteUser, res: Response) => {
-    const user = await datasource.getRepository(User).delete(requestParam);
-    if (user.affected == 0) {
-      return {
-        message: `user id ${requestParam.id} not exists`,
-      };
+    const user = await datasource.getRepository(User).findOneBy({
+      id: requestParam.id
+    });
+    if (user) {
+      const userDelete = await datasource.getRepository(User).delete(requestParam)
+      if (userDelete) {
+        return {
+          message: `user ${requestParam.id} deleted successfully`
+        }
+      } else {
+        return {
+          message: `user id ${requestParam.id} not found`,
+        };
+      }
     } else {
-      return {
-        message: `user id ${requestParam.id} deleted successfully`,
-      };
+      return{
+        message: `user id ${requestParam.id} doesn't exist`
+      }
     }
   }
 }

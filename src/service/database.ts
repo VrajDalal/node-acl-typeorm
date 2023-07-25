@@ -14,6 +14,11 @@ export class DatabaseService {
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
+      extra: {
+        ssl: {
+          rejectUnauthorized: false
+        }
+      }
     };
     await createDatabase({
       ifNotExist: true,

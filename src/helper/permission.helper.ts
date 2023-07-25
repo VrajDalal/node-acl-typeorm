@@ -19,7 +19,7 @@ export class UserPermission {
                 return `user id ${requestParam.id} not exists`
             }
         } catch (err: any) {
-            res.status(500).send({
+            res.status(500).json({
                 message: err.message,
                 stack: err.stack
             })
@@ -41,7 +41,7 @@ export class UserPermission {
                 return result
             }
         } catch (err: any) {
-            res.status(500).send({
+            res.status(500).json({
                 message: err.message,
                 stack: err.stack
             })
@@ -62,7 +62,7 @@ export class UserPermission {
                 }
             }
         } catch (err: any) {
-            res.status(500).send({
+            res.status(500).json({
                 message: err.message,
                 stacl: err.stack
             })
@@ -82,7 +82,7 @@ export class UserPermission {
                 }
             }
         } catch (err: any) {
-            res.status(500).send({
+            res.status(500).json({
                 message: err.message,
                 stack: err.stack
             })
