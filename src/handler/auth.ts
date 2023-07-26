@@ -11,7 +11,6 @@ export const loginUserData = async (req: Request, res: Response, next: NextFunct
 }
 
 export const registerUserData = async (req: Request, res: Response, next: NextFunction) => {
-    await Auth.defaultUser(req, res, next, ROLE.CREATE_USER)
     const payload = Auth.getRequestParams(req) as IRegisterUser;
     const result = await authHelper.registerUser(payload, res)
     return res.status(200).json({ body: result })
