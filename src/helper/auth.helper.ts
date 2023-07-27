@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken"
-import { IForgetUser, ILoginUser, IRegisterUser } from "../utils/interface/user.auth.interface";
+import { IForgetUser, ILoginUser } from "../utils/interface/user.auth.interface";
+import { IRegisterUser } from "../utils/interface/user.auth.interface";
 import { datasource } from "../core/datasource";
 import { User } from "../entity/user.entity";
 import { Request, Response } from "express";
-import { Roles } from "../entity/role.entity";
 
 
 export class authHelper {
@@ -66,34 +66,34 @@ export class authHelper {
     }
 
     public static registerUser = async (payload: IRegisterUser, res: Response) => {
-        const userRepository = await datasource.getRepository(User);
-        const roleRepository = await datasource.getRepository(Roles);
         try {
-            const userData = await userRepository.findOneBy({ email: payload.email });
-            // console.log(userData)
+            console.log(payload)
+            const userData: any = await datasource.getRepository(User).findOneBy({ email: payload.email });
+            console.log(userData)
             if (userData) {
                 return {
                     message: 'Email already exists!',
                 };
             }
-            const existingRole = await roleRepository.findOneBy({
-                id: payload.roles,
-            });
-            if (!existingRole) {
-                return {
-                    message: 'Invalid Role!',
-                };
-            }
+            // const existingRole = await roleRepository.findOneBy({
+            //     id: payload.roles,
+            // });
+            // if (!existingRole) {
+            //     return {
+            //         message: 'Invalid Role!',
+            //     };
+            // }
             // console.log(existingRole);
-            delete payload.roles;
-            const userPayload: any = {
-                ...payload,
-                roles: existingRole,
-            };
+            // delete payload.roles;
+            // const userPayload: any = {
+            //     ...payload,
+            //     roles: existingRole,
+            // };
             // console.log(userPayload);
-            const users = await datasource.getRepository(User).create(userPayload)
 
-            const result = await datasource.getRepository(User).save(users)
+            const createUser = await datasource.getRepository(User).create(payload)
+
+            const result = await datasource.getRepository(User).save(createUser)
             return result
         } catch (err: any) {
             return {

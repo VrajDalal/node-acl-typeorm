@@ -15,13 +15,13 @@ export class userHelper {
 
   public static getUser = async (requestParam: IGetUser, res: Response) => {
     try {
-      const user = await datasource.getRepository(User).findOneBy({ id: requestParam.id });
+      const user = await datasource.getRepository(User).findOneBy({ id: requestParam.userId });
       console.log(user)
       if (user) {
         return user;
       } else {
         return {
-          message: `user id ${requestParam.id} is not exists`
+          message: `user id ${requestParam.userId} is not exists`
         }
       }
     } catch (err: any) {
@@ -71,10 +71,9 @@ export class userHelper {
   };
 
   public static updateUser = async (requestParam: IUpdateUser, res: Response) => {
-    const user: any = await datasource.getRepository(User).findOneBy({ id: requestParam.id });
+    const user: any = await datasource.getRepository(User).findOneBy({ id: requestParam.userId });
     // console.log(user)
     if (user) {
-      delete requestParam.id
       datasource.getRepository(User).merge(user, requestParam);
       // console.log(merger)
       const result = await datasource.getRepository(User).save(user);
@@ -82,29 +81,29 @@ export class userHelper {
       return result;
     } else {
       return {
-        message: `user id ${requestParam.id} incorrect`
+        message: `user id ${requestParam.userId} incorrect`
       };
     }
   }
 
   public static deleteUser = async (requestParam: IDeleteUser, res: Response) => {
     const user = await datasource.getRepository(User).findOneBy({
-      id: requestParam.id
+      id: requestParam.userId
     });
     if (user) {
-      const userDelete = await datasource.getRepository(User).delete(requestParam)
+      const userDelete = await datasource.getRepository(User).delete(requestParam.userId)
       if (userDelete) {
         return {
-          message: `user ${requestParam.id} deleted successfully`
+          message: `user ${requestParam.userId} deleted successfully`
         }
       } else {
         return {
-          message: `user id ${requestParam.id} not found`,
+          message: `user id ${requestParam.userId} not found`,
         };
       }
     } else {
-      return{
-        message: `user id ${requestParam.id} doesn't exist`
+      return {
+        message: `user id ${requestParam.userId} doesn't exist`
       }
     }
   }

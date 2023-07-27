@@ -11,7 +11,9 @@
     "lint:fix": "eslint 'src/**' --ext .js,.ts --fix",
     "typeorm": "typeorm-ts-node-commonjs",
     "db:generate": "npm run typeorm migration:revert -- -d src/core/datasource.ts && npm run typeorm migration:run -- -d src/core/datasource.ts",
-    "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run"
+    "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
+    "seeds:config": "npm run typeorm config",
+    "db:seed": "ts-node src/service/seed.ts"
   },
   "author": "",
   "license": "ISC",
@@ -32,6 +34,7 @@
   },
   "dependencies": {
     "@google-cloud/spanner": "^5.18.0",
+    "@paranode/typeorm-seeding": "^3.1.1",
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",
     "dotenv": "^16.3.1",
@@ -46,6 +49,7 @@
     "pg": "^8.11.1",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.3.17",
-    "typeorm-extension": "^2.8.1"
+    "typeorm-extension": "^2.8.1",
+    "typeorm-seedling": "^4.0.4"
   }
 }

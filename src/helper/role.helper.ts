@@ -1,12 +1,12 @@
 import { Response } from "express";
 import { datasource } from "../core/datasource";
 import { Roles } from "../entity/role.entity";
-import { ICreateRole, IDeleteRole, IUpdateRole } from "../utils/interface/role.permission.interface";
+import { ICreateRole, IDeleteRole, IGetRole, IUpdateRole } from "../utils/interface/role.permission.interface";
 import { Permissions } from "../entity/permission.entity";
 
 
 export class UserRole {
-    public static getRoles = async (requestParam: ICreateRole) => {
+    public static getRoles = async () => {
         const role = await datasource.getRepository(Roles).find({
             relations: {
                 permission: true
@@ -15,7 +15,7 @@ export class UserRole {
         return role
     }
 
-    public static getRolesById = async (requestParam: ICreateRole, res: Response) => {
+    public static getRolesById = async (requestParam: IGetRole, res: Response) => {
 
         try {
             const role = await datasource.getRepository(Roles).find({
@@ -77,7 +77,7 @@ export class UserRole {
                 id:requestParam.id
             })
             if (role) {
-                delete requestParam.id
+                // delete requestParam.id
                 datasource.getRepository(Roles).merge(role, requestParam)
                 const result = await datasource.getRepository(Roles).save(role)
                 return result

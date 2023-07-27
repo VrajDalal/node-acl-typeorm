@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import seeds from 'typeorm-extension';
 
 export const datasource = new DataSource({
   type: 'mysql',
@@ -17,5 +18,5 @@ export const datasource = new DataSource({
     ssl: {
       rejectUnauthorized: false
     }
-  }
+  },
 });

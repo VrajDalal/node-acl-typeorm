@@ -1,12 +1,15 @@
 export interface ICreateRole {
-    id?: string;
     name: string;
     permissions: string[];
 }
 
-export interface IUpdateRole extends ICreateRole { }
+export interface IGetRole {
+    id: string
+}
 
-export interface IDeleteRole extends ICreateRole { }
+export interface IUpdateRole extends ICreateRole,IGetRole { }
+
+export interface IDeleteRole extends ICreateRole,IGetRole { }
 
 export interface ICreatePermission {
     id?: string;

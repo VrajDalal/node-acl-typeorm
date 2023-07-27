@@ -1,5 +1,5 @@
 export const GetUserById = {
-    id: { type: 'string', empty: false, trim: true }
+    userId: { type: 'string', empty: false, trim: true }
 }
 
 export const CreaterUserSchema = {
@@ -11,7 +11,7 @@ export const CreaterUserSchema = {
 }
 
 export const UpdateUserSchema = {
-    id: { type: 'string', empty: true, trim: true },
+    userId: { type: 'string', empty: true, trim: true },
     name: { type: 'string', empty: true, trim: true, optional: true },
     email: { type: 'string', lowercase: true, empty: true, trim: true, optional: true },
     password: { type: 'string', empty: true, optional: true },
@@ -20,5 +20,5 @@ export const UpdateUserSchema = {
 }
 
 export const DeleteUserSchema = {
-    id: { type: 'string', empty: false, trim: true }
+    userId: { type: 'string', empty: false, trim: true }
 }

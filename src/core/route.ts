@@ -1,6 +1,6 @@
 const apiEndPoint = {
     user: '/users', // get // post
-    userById: '/users/:id', // get , // put // delete
+    userById: '/users/:userId', // get , // put // delete
     login: '/auth/local',// post
     register: '/auth/local/register',//post
     forget: '/forget',//post

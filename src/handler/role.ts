@@ -2,16 +2,15 @@ import { NextFunction, Request, Response } from "express";
 import { UserRole } from "../helper/role.helper";
 import { User } from "../entity/user.entity";
 import { Auth } from "../utils/auth";
-import { ICreateRole, IDeleteRole, IUpdateRole } from "../utils/interface/role.permission.interface";
+import { ICreateRole, IDeleteRole, IGetRole, IUpdateRole } from "../utils/interface/role.permission.interface";
 
 export const getRoleData = async (req: Request, res: Response, next: NextFunction) => {
-    const reqParams = await Auth.getRequestParams(req) as ICreateRole
-    const result = await UserRole.getRoles(reqParams)
+    const result = await UserRole.getRoles()
     return res.status(200).json({ body: result })
 }
 
 export const getRoleIdData = async (req: Request, res: Response, next: NextFunction) => {
-    const reqParams = await Auth.getRequestParams(req) as ICreateRole
+    const reqParams = await Auth.getRequestParams(req) as IGetRole
     const result = await UserRole.getRolesById(reqParams, res)
     return res.status(200).json({ body: result })
 }

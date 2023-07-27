@@ -1,10 +1,11 @@
+
+
 export interface IRegisterUser {
-    name: string,
-    email: string,
-    password: string,
-    mobile_no: number,
-    roles: any,
-    address: IAddress,
+    name: string;
+    email: string;
+    password: string;
+    mobile_no: number;
+    address: IAddress;
 }
 
 export interface ICreateUser {
@@ -17,13 +18,13 @@ export interface ICreateUser {
 }
 
 export interface IGetUser {
-    id?: string
+    userId: string
 }
 
 export interface IUpdateUser extends ICreateUser, IGetUser { }
 
 export interface IDeleteUser {
-    id: string
+    userId: string
 }
 
 

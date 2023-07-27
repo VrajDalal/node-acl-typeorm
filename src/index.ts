@@ -1,26 +1,91 @@
-import express, { Express, response } from 'express';
+import express, { Express, NextFunction, Request, Response, response, } from 'express';
 import router from './routes';
 import { DatabaseService } from './service/database';
 import dotenv from 'dotenv';
 import path from 'path';
+import AppError from './utils/app_error';
+import { datasource } from './core/datasource';
+import { Permissions } from './entity/permission.entity';
+import { Roles } from './entity/role.entity';
+import { User } from './entity/user.entity';
 
 const envPath = path.resolve(__dirname, '..', '.env');
 dotenv.config({ path: envPath });
 
-DatabaseService.connectDatabase().then((res) =>
-  console.log('Database connected successfully')
-);
+DatabaseService.connectDatabase().then((res) => {
+  const app: Express = express();
+  const port = process.env.PORT || 9090;
 
-const app: Express = express();
-const port = process.env.PORT || 9090;
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+  app.use(router);
 
-app.use(router);
+  //static seeding
+  // app.get('/dummy', async (req: Request, res: Response) => {
+  //   const permissions = [
+  //     {
+  //       name: "create_user(dummy)"
+  //     }, {
+  //       name: "update_user(dummy)"
+  //     }, {
+  //       name: "view_users(dummy)"
+  //     }, {
+  //       name: "view_single_user(dummy)"
+  //     }, {
+  //       name: "delete_user(dummy)"
+  //     }
+  //   ]
 
-app.listen(port, () => {
-  console.log(`${port} successfully started`);
+  //   const storePermission = await datasource.getRepository(Permissions).create(permissions)
+  //   const permissionResult = await datasource.getRepository(Permissions).save(storePermission)
+
+  //   const role: any = {
+  //     name: "Dummy User",
+  //     permission: permissionResult
+  //   }
+
+  //   const storeRoles = await datasource.getRepository(Roles).create(role)
+  //   const roleResult = await datasource.getRepository(Roles).save(storeRoles)
+
+  //   const user: any = {
+  //     name: "Dummy",
+  //     email: "dummy@gmail.com",
+  //     password: "dummy@123",
+  //     mobile_no: 9876543210,
+  //     roles: roleResult
+  //   }
+
+  //   const storeUser = await datasource.getRepository(User).create(user)
+  //   const userResult = await datasource.getRepository(User).save(storeUser)
+  //   res.status(200).json({
+  //     permissionResult, roleResult, userResult
+  //   })
+  // })
+
+
+
+  // UNHANDLED ROUTE
+  app.all('*', (req: Request, res: Response, next: NextFunction) => {
+    next(new AppError(404, `Route ${req.originalUrl} not found`));
+  });
+
+  // GLOBAL ERROR HANDLER
+  app.use(
+    (error: AppError, req: Request, res: Response, next: NextFunction) => {
+      error.status = error.status || 'error';
+      error.statusCode = error.statusCode || 500;
+
+      res.status(error.statusCode).json({
+        status: error.status,
+        message: error.message,
+      });
+    }
+  );
+
+  app.listen(port, () => {
+    console.log(`${port} successfully started`);
+  });
 });
 
 //List of user /users --> GET == done
@@ -57,3 +122,4 @@ app.listen(port, () => {
 */
 
 //create by default user role in Auth
+//create static seeder api for create dummy data in user,role,permission
