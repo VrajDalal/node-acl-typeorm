@@ -16,5 +16,6 @@ export const genrateString = (length: number) => {
 export const validateObjectId = (id: string): boolean => {
   const regex = /^VR.*AJ$/   // regular expression
   const valid = regex.test(id)
-  return valid;
+  return valid
 }
+

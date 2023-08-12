@@ -18,16 +18,17 @@ export class UserRole {
     public static getRolesById = async (requestParam: IGetRole, res: Response) => {
 
         try {
-            const role = await datasource.getRepository(Roles).find({
+            const rolePermission = await datasource.getRepository(Roles).find({
                 relations: {
                     permission: true
-                }, where: {
-                    id: requestParam.id
                 }
             })
+            const roleId = await datasource.getRepository(Roles).findOneBy({
+                id: requestParam.id
+            })
             // const role = await datasource.getRepository(Roles).findOneBy({ id: requestParam.id })
-            if (role) {
-                return role
+            if (rolePermission && roleId) {
+                return rolePermission
             } else {
                 return {
                     message: `user id ${requestParam.id} not exists`
@@ -47,6 +48,7 @@ export class UserRole {
             // console.log(requestParam.permissions)
             for (let i = 0; i < requestParam.permissions.length; i++) {
                 const permission = await datasource.getRepository(Permissions).findOneBy({ id: requestParam.permissions[i] })
+
                 if (!permission) {
                     return {
                         message: 'Invalid Permisssion'
@@ -59,6 +61,7 @@ export class UserRole {
                 ...requestParam,
                 permission: newPermissions
             }
+            console.log(rolePayload)
             const role = await datasource.getRepository(Roles).create(rolePayload)
             const result = await datasource.getRepository(Roles).save(role)
             return result;
@@ -74,7 +77,7 @@ export class UserRole {
     public static updateRole = async (requestParam: IUpdateRole, res: Response) => {
         try {
             const role = await datasource.getRepository(Roles).findOneBy({
-                id:requestParam.id
+                id: requestParam.id
             })
             if (role) {
                 // delete requestParam.id

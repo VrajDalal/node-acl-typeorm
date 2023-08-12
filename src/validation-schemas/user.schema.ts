@@ -22,3 +22,4 @@ export const UpdateUserSchema = {
 export const DeleteUserSchema = {
     userId: { type: 'string', empty: false, trim: true }
 }
+

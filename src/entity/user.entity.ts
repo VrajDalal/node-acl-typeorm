@@ -1,14 +1,7 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToMany,
-  JoinTable,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, BeforeInsert } from 'typeorm';
 import { Roles } from './role.entity';
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 @Entity()
 export class User {
@@ -35,4 +28,24 @@ export class User {
 
   @ManyToOne(() => Roles)
   roles: Roles[];
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10)
+  }
+
+  static async comparePassword(candidatePassword: string, hashedPassword: string) {
+    return await bcrypt.compare(candidatePassword, hashedPassword)
+  }
+
+  static signToken(userObject: any) {
+    const jwtToken = jwt.sign({ userObject }, 'secretkey', { expiresIn: '60d' })
+    const userData = {
+      jwt: jwtToken,
+      users: userObject
+    }
+    return userData
+  }
 }
+
+

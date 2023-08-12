@@ -9,7 +9,7 @@ export class MainSeeder implements Seeder {
         dataSource: DataSource,
         factoryManager: SeederFactoryManager,
     ): Promise<any> {
-        console.log("caleed")
+        console.log("called")
         const permissions = [
             {
                 name: "create_user(dummy)"

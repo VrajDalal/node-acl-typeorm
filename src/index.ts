@@ -8,6 +8,8 @@ import { datasource } from './core/datasource';
 import { Permissions } from './entity/permission.entity';
 import { Roles } from './entity/role.entity';
 import { User } from './entity/user.entity';
+import fileUpload from 'express-fileupload';
+import bodyParser from 'body-parser';
 
 const envPath = path.resolve(__dirname, '..', '.env');
 dotenv.config({ path: envPath });
@@ -16,24 +18,55 @@ DatabaseService.connectDatabase().then((res) => {
   const app: Express = express();
   const port = process.env.PORT || 9090;
 
+
+  app.use(fileUpload({
+    createParentPath: true,
+    uriDecodeFileNames: true,
+    useTempFiles: true,
+    tempFileDir: './src/image'
+  }))
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
 
   app.use(router);
 
+
   //static seeding
   // app.get('/dummy', async (req: Request, res: Response) => {
   //   const permissions = [
   //     {
-  //       name: "create_user(dummy)"
+  //       name: "create_user"
   //     }, {
-  //       name: "update_user(dummy)"
+  //       name: "update_user"
   //     }, {
-  //       name: "view_users(dummy)"
+  //       name: "view_users"
   //     }, {
-  //       name: "view_single_user(dummy)"
+  //       name: "view_single_user"
   //     }, {
-  //       name: "delete_user(dummy)"
+  //       name: "delete_user"
+  //     },
+  //     {
+  //       name: "create_role"
+  //     }, {
+  //       name: "update_role"
+  //     }, {
+  //       name: "view_roles"
+  //     }, {
+  //       name: "view_single_role"
+  //     }, {
+  //       name: "delete_role"
+  //     },
+  //     {
+  //       name: "create_permisssion"
+  //     }, {
+  //       name: "update_permisssion"
+  //     }, {
+  //       name: "view_permisssions"
+  //     }, {
+  //       name: "view_single_permisssion"
+  //     }, {
+  //       name: "delete_permisssion"
   //     }
   //   ]
 
@@ -62,8 +95,6 @@ DatabaseService.connectDatabase().then((res) => {
   //     permissionResult, roleResult, userResult
   //   })
   // })
-
-
 
   // UNHANDLED ROUTE
   app.all('*', (req: Request, res: Response, next: NextFunction) => {
@@ -123,3 +154,7 @@ DatabaseService.connectDatabase().then((res) => {
 
 //create by default user role in Auth
 //create static seeder api for create dummy data in user,role,permission
+
+//datauri
+//url or id
+//upload image upto 5 mb

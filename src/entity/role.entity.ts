@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import seeding from "@paranode/typeorm-seeding"
 import { Permissions } from './permission.entity';
 
 @Entity()

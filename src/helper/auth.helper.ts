@@ -3,32 +3,34 @@ import { IForgetUser, ILoginUser } from "../utils/interface/user.auth.interface"
 import { IRegisterUser } from "../utils/interface/user.auth.interface";
 import { datasource } from "../core/datasource";
 import { User } from "../entity/user.entity";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import bcrypt, { hash, hashSync } from "bcrypt"
+import { BeforeInsert } from "typeorm";
+import { hkdf } from "crypto";
+import AppError from "../utils/app_error";
+
 
 
 export class authHelper {
     public static loginUser = async (payload: ILoginUser, res: Response) => {
         try {
-            const users = await datasource.getRepository(User).find({
-                relations: {
-                    roles: true
+            const user = await datasource.getRepository(User).findOne({
+                where: {
+                    email: payload.email
+                }, relations:{
+                    roles:true
                 }
             })
-            const email = payload.email
-            const password = payload.password
-            // console.log(email);
-            const found = users.find((datas: any) => email === datas.email && password === datas.password)
-            // console.log(found);
-            if (found) {
-                const jwtToken = jwt.sign({ found }, 'secretkey', { expiresIn: '60d' })
-                const userData = {
-                    jwt: jwtToken,
-                    users: found
+            if (user) {
+                if (!(await User.comparePassword(payload.password, user.password))) {
+                    return {
+                        message: 'invalid password'
+                    }
                 }
-                return userData
+                return User.signToken(user)
             } else {
                 return {
-                    message: 'invalid email_id or password'
+                    message: 'invalid email_id'
                 }
             }
         } catch (err: any) {
@@ -38,6 +40,7 @@ export class authHelper {
             })
         }
     }
+
 
     public static forgetPassword = async (payload: IForgetUser, res: Response) => {
         try {
@@ -65,11 +68,11 @@ export class authHelper {
         }
     }
 
-    public static registerUser = async (payload: IRegisterUser, res: Response) => {
+    public static registerUser = async (payload: IRegisterUser, _res: Response) => {
         try {
-            console.log(payload)
+            // console.log(payload)
             const userData: any = await datasource.getRepository(User).findOneBy({ email: payload.email });
-            console.log(userData)
+            // console.log(userData)
             if (userData) {
                 return {
                     message: 'Email already exists!',

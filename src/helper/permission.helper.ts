@@ -28,15 +28,17 @@ export class UserPermission {
 
     public static createPermissions = async (requestParam: ICreatePermission, res: Response) => {
         try {
-            const permission = await datasource.getRepository(Permissions).findOneBy({ name: requestParam.name })
+            const permission = await datasource.getRepository(Permissions).findOneBy({
+                name: requestParam.name
+            })
             // console.log(permission)
             if (permission) {
                 return {
                     messgae: 'permission already exists'
                 }
             } else {
-                const permission = await datasource.getRepository(Permissions).create(requestParam)
-                const result = await datasource.getRepository(Permissions).save(permission)
+                const permissions = await datasource.getRepository(Permissions).create(requestParam)
+                const result = await datasource.getRepository(Permissions).save(permissions)
                 // console.log(result)
                 return result
             }
