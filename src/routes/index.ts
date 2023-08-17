@@ -10,10 +10,10 @@ import { createPermissionData, deletePermissionData, getPermissionByIdData, getP
 import { ROLE } from '../utils/enum';
 import { CreateRoleSchema, DeleteRoleSchema, GetRolesByIdSchema, UpdateRoleSchema } from '../validation-schemas/role.schema';
 import { CreatePermissionSchema, DeletePermissionSchema, GetPermissionByIdSchema, UpdatePermissionSchema } from '../validation-schemas/permission.schema';
-import { UploadSchema } from '../validation-schemas/upload.schema';
-import { uploadImages } from '../handler/upload';
-import { categoryData, getCategorysData, getCategorysDataById } from '../handler/category';
-import { CreateCategorySchema, GetCategoryByIdSchema } from '../validation-schemas/category.schema';
+import { DeleteUploadSchema, GetUploadByIdSchema, UpdateUploadSchema } from '../validation-schemas/upload.schema';
+import { createUploadFile, deleteUploadData, getUploadData, getUploadDataById, updateUploadData } from '../handler/upload';
+import { categoryData, deleteCategoryData, getCategorysData, getCategorysDataById, updateCategoryData } from '../handler/category';
+import { CreateCategorySchema, DeleteCategorySchema, GetCategoryByIdSchema, UpdateCategorySchema } from '../validation-schemas/category.schema';
 
 const router: Router = Router();
 
@@ -86,13 +86,23 @@ router.route(apiEndPoint.permissionById)
 
 router.route(apiEndPoint.upload)
   .post(async (req: Request, res: Response, next: NextFunction) => {
-    await uploadImages(req, res, next);
+    await createUploadFile(req, res, next);
+  }).get(async (req: Request, res: Response, next: NextFunction) => {
+    await getUploadData(req, res, next)
   })
 
+router.route(apiEndPoint.uploadById)
+  .get((Auth.validateSchema(GetUploadByIdSchema)), async (req: Request, res: Response, next: NextFunction) => {
+    await getUploadDataById(req, res, next)
+  }).put((Auth.validateSchema(UpdateUploadSchema)), async (req: Request, res: Response, next: NextFunction) => {
+    await updateUploadData(req, res, next)
+  }).delete((Auth.validateSchema(DeleteUploadSchema)), async (req: Request, res: Response, next: NextFunction) => {
+    await deleteUploadData(req, res, next)
+  })
 //Category routs'
 
 router.route(apiEndPoint.category)
-  .post(async (req: Request, res: Response, next: NextFunction) => {
+  .post((Auth.validateSchema(CreateCategorySchema)), async (req: Request, res: Response, next: NextFunction) => {
     await categoryData(req, res, next)
   }).get(async (req: Request, res: Response, next: NextFunction) => {
     await getCategorysData(req, res, next)
@@ -101,6 +111,10 @@ router.route(apiEndPoint.category)
 router.route(apiEndPoint.categoryById)
   .get((Auth.validateSchema(GetCategoryByIdSchema)), async (req: Request, res: Response, next: NextFunction) => {
     await getCategorysDataById(req, res, next)
+  }).put( async (req: Request, res: Response, next: NextFunction) => {
+    await updateCategoryData(req, res, next)
+  }).delete((Auth.validateSchema(DeleteCategorySchema)), async (req: Request, res: Response, next: NextFunction) => {
+    await deleteCategoryData(req, res, next)
   })
 
 export default router;

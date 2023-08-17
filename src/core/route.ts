@@ -13,9 +13,10 @@ const apiEndPoint = {
     permissions: '/permissions',//post //get
     permissionById: '/permissions/:id', //get //put //delete
     //UPLOAD FILES
-    upload: '/uploads',//post
+    upload: '/uploads',//post //get
+    uploadById: '/uploads/:id', //get //put //delete
     //CATEGORYS
     category: '/categorys',//post //get
-    categoryById: '/categorys/:id'//get
+    categoryById: '/categorys/:id'//get //put //delete
 }
 export { apiEndPoint }

@@ -21,13 +21,11 @@ export class UserRole {
             const rolePermission = await datasource.getRepository(Roles).find({
                 relations: {
                     permission: true
+                }, where: {
+                    id: requestParam.id
                 }
             })
-            const roleId = await datasource.getRepository(Roles).findOneBy({
-                id: requestParam.id
-            })
-            // const role = await datasource.getRepository(Roles).findOneBy({ id: requestParam.id })
-            if (rolePermission && roleId) {
+            if (rolePermission) {
                 return rolePermission
             } else {
                 return {

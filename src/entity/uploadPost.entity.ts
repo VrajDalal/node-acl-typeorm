@@ -1,4 +1,5 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { CategoryItem } from "./category.entity";
 
 @Entity()
 export class UploadItem {
@@ -17,6 +18,8 @@ export class UploadItem {
     @Column({ type: 'varchar', length: 100 })
     extension: string
 
-    // @ManyToMany(() => CategoryItem)
+    // @OneToMany(() => CategoryItem,category => category.id,{
+    //     onDelete: 'CASCADE'
+    // })
     // category: CategoryItem
 }

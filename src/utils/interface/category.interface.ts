@@ -5,10 +5,18 @@ export interface ICreateCategory {
 }
 
 export interface IGetCategory {
-    id: string
     name: string
 }
 
 export interface IGetCategoryById {
     id: string
 }
+
+export interface IUpdateCategory {
+    id: string
+    image: any
+    name: string
+    
+}
+
+export interface IDeleteCategory extends IGetCategoryById { }

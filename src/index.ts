@@ -22,8 +22,8 @@ DatabaseService.connectDatabase().then((res) => {
   app.use(fileUpload({
     createParentPath: true,
     uriDecodeFileNames: true,
-    useTempFiles: true,
-    tempFileDir: './src/image'
+    useTempFiles: false,
+    // tempFileDir: './src/image'
   }))
 
   app.use(express.json());
@@ -158,3 +158,4 @@ DatabaseService.connectDatabase().then((res) => {
 //datauri
 //url or id
 //upload image upto 5 mb
+//use casced for updateCategory api
