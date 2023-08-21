@@ -83,7 +83,7 @@ export class UploadFiles {
             const findFile: any = await datasource.getRepository(UploadItem).findOneBy({
                 id: payload.id
             })
-            const write = await fs.unlinkSync(`./src/img/${findFile.path}`)
+            await fs.unlinkSync(`./src/img/${findFile.path}`)
             const item = await datasource.getRepository(UploadItem).delete({
                 id: payload.id
             })

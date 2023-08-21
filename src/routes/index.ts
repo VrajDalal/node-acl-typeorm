@@ -14,6 +14,8 @@ import { DeleteUploadSchema, GetUploadByIdSchema, UpdateUploadSchema } from '../
 import { createUploadFile, deleteUploadData, getUploadData, getUploadDataById, updateUploadData } from '../handler/upload';
 import { categoryData, deleteCategoryData, getCategorysData, getCategorysDataById, updateCategoryData } from '../handler/category';
 import { CreateCategorySchema, DeleteCategorySchema, GetCategoryByIdSchema, UpdateCategorySchema } from '../validation-schemas/category.schema';
+import { createPostData, deletePostData, getPostByIdData, getPostData, updatePostData } from '../handler/post';
+import { CreatePostItem, DeletePostById, GetPostById, UpdatePostItem } from '../validation-schemas/post.schema';
 
 const router: Router = Router();
 
@@ -99,7 +101,7 @@ router.route(apiEndPoint.uploadById)
   }).delete((Auth.validateSchema(DeleteUploadSchema)), async (req: Request, res: Response, next: NextFunction) => {
     await deleteUploadData(req, res, next)
   })
-//Category routs'
+//Category routs
 
 router.route(apiEndPoint.category)
   .post((Auth.validateSchema(CreateCategorySchema)), async (req: Request, res: Response, next: NextFunction) => {
@@ -111,10 +113,27 @@ router.route(apiEndPoint.category)
 router.route(apiEndPoint.categoryById)
   .get((Auth.validateSchema(GetCategoryByIdSchema)), async (req: Request, res: Response, next: NextFunction) => {
     await getCategorysDataById(req, res, next)
-  }).put( async (req: Request, res: Response, next: NextFunction) => {
+  }).put(async (req: Request, res: Response, next: NextFunction) => {
     await updateCategoryData(req, res, next)
   }).delete((Auth.validateSchema(DeleteCategorySchema)), async (req: Request, res: Response, next: NextFunction) => {
     await deleteCategoryData(req, res, next)
+  })
+
+//post route
+router.route(apiEndPoint.post)
+  .post((Auth.validateSchema(CreatePostItem)), async (req: Request, res: Response, next: NextFunction) => {
+    await createPostData(req, res, next)
+  }).get(async (req: Request, res: Response, next: NextFunction) => {
+    await getPostData(req, res, next)
+  })
+
+router.route(apiEndPoint.postById)
+  .get((Auth.validateSchema(GetPostById)), async (req: Request, res: Response, next: NextFunction) => {
+    await getPostByIdData(req, res, next)
+  }).put(async (req: Request, res: Response, next: NextFunction) => {
+    await updatePostData(req, res, next)
+  }).delete((Auth.validateSchema(DeletePostById)), async (req: Request, res: Response, next: NextFunction) => {
+    await deletePostData(req, res, next)
   })
 
 export default router;

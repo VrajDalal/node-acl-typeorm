@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { CategoryItem } from "./category.entity";
 import { UploadItem } from "./uploadPost.entity";
 import { User } from "./user.entity";
@@ -27,14 +27,14 @@ export class PostItem {
     @Column()
     shares: number
 
-    @Column()
-    is_published: boolean
+    @CreateDateColumn()
+    is_published: Date
 
-    @Column()
-    is_deleted: boolean
+    @DeleteDateColumn()
+    is_deleted: Date
 
     @ManyToOne(() => User)
-    user: User
+    users: User
 
     @ManyToOne(() => UploadItem)
     image: UploadItem
