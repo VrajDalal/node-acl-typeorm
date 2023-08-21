@@ -19,18 +19,18 @@ export const getCategorysDataById = async (req: Request, res: Response, next: Ne
 
 export const categoryData = async (req: Request, res: Response, next: NextFunction) => {
     const payload = Auth.getRequestParams(req) as ICreateCategory
-    const result = await Category.createCategory(req, res, payload)
+    const result = await Category.createCategory(req, payload)
     return res.status(200).json({ body: result })
 }
 
 export const updateCategoryData = async (req: Request, res: Response, next: NextFunction) => {
     const payload = Auth.getRequestParams(req) as IUpdateCategory
-    const result = await Category.updateCategory(req, res, payload)
+    const result = await Category.updateCategory(req, payload)
     return res.status(200).json({ body: result })
 }
 
 export const deleteCategoryData = async (req: Request, res: Response, next: NextFunction) => {
     const payload = Auth.getRequestParams(req) as IDeleteCategory
-    const result = await Category.deleteCategory(req, res, payload)
+    const result = await Category.deleteCategory(req, payload)
     return res.status(200).json({ body: result })
 }

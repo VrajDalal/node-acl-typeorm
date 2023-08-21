@@ -30,6 +30,6 @@ export const updateUserData = async (req: Request, res: Response, next: NextFunc
 
 export const deleteUserData = async (req: Request, res: Response, next: NextFunction) => {
   const payload = Auth.getRequestParams(req) as IDeleteUser;
-  const result = await userHelper.deleteUser(req,payload, res,next);
+  const result = await userHelper.deleteUser(req,payload,next);
   return res.status(200).json({ body: result });
 };

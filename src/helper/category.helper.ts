@@ -43,7 +43,7 @@ export class Category {
         }
     }
 
-    public static createCategory = async (req: Request, res: Response, payload: ICreateCategory) => {
+    public static createCategory = async (req: Request, payload: ICreateCategory) => {
         try {
             const fileUploder: any = req.files?.image
             let uploadRes: any = []
@@ -55,7 +55,7 @@ export class Category {
                     size: fileUploder.size,
                     extension: fileUploder.mimetype,
                 }
-                uploadRes = await UploadFiles.createFile(req, res, data)
+                uploadRes = await UploadFiles.createFile(req, data)
                 if (uploadRes && uploadRes.status === 400) {
                     return uploadRes
                 }
@@ -81,7 +81,7 @@ export class Category {
         }
     }
 
-    public static updateCategory = async (req: Request, res: Response, payload: IUpdateCategory) => {
+    public static updateCategory = async (req: Request, payload: IUpdateCategory) => {
         try {
             const categoryIcon: any = await datasource.getRepository(CategoryItem).find({
                 where: {
@@ -99,7 +99,7 @@ export class Category {
             const data = this.setCategoryData(payload, categoryIcon)
             const merger = await datasource.getRepository(CategoryItem).merge(categoryIcon[0], data)
             const result = await datasource.getRepository(CategoryItem).save(merger)
-            const uploadResponce = await UploadFiles.updateUploadItem(req, categoryIcon[0].icon, res)
+            const uploadResponce = await UploadFiles.updateUploadItem(req, categoryIcon[0].icon)
             if (uploadResponce) {
                 return uploadResponce
             }
@@ -111,7 +111,7 @@ export class Category {
         }
     }
 
-    public static deleteCategory = async (req: Request, res: Response, payload: IDeleteCategory) => {
+    public static deleteCategory = async (req: Request, payload: IDeleteCategory) => {
         try {
             const categoryFind: any = await datasource.getRepository(CategoryItem).find({
                 relations: {
@@ -131,7 +131,7 @@ export class Category {
                     message: `category id ${payload.id} not exists`
                 }
             } else {
-                const deleteUploadfile = await UploadFiles.deleteUploadItem(req, categoryFind[0].icon, res)
+                const deleteUploadfile = await UploadFiles.deleteUploadItem(req, categoryFind[0].icon)
                 return {
                     message: `category id ${payload.id} deleted successfully`
                 }

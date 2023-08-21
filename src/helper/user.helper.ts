@@ -101,7 +101,7 @@ export class userHelper {
     }
   }
 
-  public static deleteUser = async (req: Request, requestParam: IDeleteUser, res: Response, next: NextFunction) => {
+  public static deleteUser = async (req: Request, requestParam: IDeleteUser, next: NextFunction) => {
     try {
       const headerAuth = req.headers.authorization
       if (!headerAuth) {

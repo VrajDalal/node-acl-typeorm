@@ -30,6 +30,6 @@ export const updatePostData = async (req: Request, res: Response, next: NextFunc
 
 export const deletePostData = async (req: Request, res: Response, next: NextFunction) => {
     const payload = Auth.getRequestParams(req) as IDeletePost
-    const result = await Post.deletePost(payload)
+    const result = await Post.deletePost(req,payload)
     return res.status(200).json({ body: result })
 }

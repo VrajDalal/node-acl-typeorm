@@ -7,6 +7,11 @@ import { User } from "../entity/user.entity";
 import { ICreatePostItem, IDeletePost, IGetPostById, IUpdatePost } from "../utils/interface/post.interface";
 import { ICreateUser } from "../utils/interface/user.auth.interface";
 import { error } from "console";
+import { it } from "node:test";
+import { userHelper } from "./user.helper";
+import { Category } from "./category.helper";
+import { UploadFiles } from "./uploadItem.helper";
+import { Request, Response } from "express";
 
 
 export class Post {
@@ -32,10 +37,13 @@ export class Post {
                     id: payload.id
                 }
             })
-            if (post) {
+            const postId = post[0]
+            if (postId) {
                 return post
             } else {
-                return `post id ${payload.id} not exits`
+                return {
+                    message: `post id ${payload.id} not exits`
+                }
             }
         } catch (err: any) {
             return {
@@ -171,18 +179,33 @@ export class Post {
         }
     }
 
-    public static deletePost = async (payload: IDeletePost) => {
+    public static deletePost = async (req: Request, payload: IDeletePost) => {
         try {
-            const post = await datasource.getRepository(PostItem).delete({
-                id: payload.id
+            const reqparams = payload
+            const post: any = await datasource.getRepository(PostItem).find({
+                relations: {
+                    users: true,
+                    category: true,
+                    image: true
+                }, where: {
+                    id: reqparams.id
+                }
             })
-            if (post.affected == 0) {
+            const postId = post[0]
+            if (!postId) {
                 return {
-                    message: `post id ${payload.id} not exists`
+                    message: `post id ${reqparams.id} not exists`
+                }
+            }
+            const postdelete: any = await datasource.getRepository(PostItem).delete(reqparams.id)
+            if (postdelete.affected == 0) {
+                return {
+                    message: `post id ${reqparams.id} not exists`
                 }
             } else {
+                await UploadFiles.deleteUploadItem(req, postId.image)
                 return {
-                    message: `post id ${payload.id} is deleted successfully`
+                    message: `post id ${reqparams.id} deleted successfully`
                 }
             }
         } catch (err: any) {

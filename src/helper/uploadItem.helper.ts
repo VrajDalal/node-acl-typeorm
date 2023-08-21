@@ -15,7 +15,7 @@ export class UploadFiles {
         return items
     }
 
-    public static getUploadItemById = async (payload: IGetUploadItemById, res: Response) => {
+    public static getUploadItemById = async (payload: IGetUploadItemById) => {
         try {
             const item = await datasource.getRepository(UploadItem).findOneBy({
                 id: payload.id
@@ -35,7 +35,7 @@ export class UploadFiles {
         }
     }
 
-    public static createFile = async (req: Request, res: Response, reqSchema: ICreateUploadItem) => {
+    public static createFile = async (req: Request, reqSchema: ICreateUploadItem) => {
         try {
             const maxSizeinMB = 5
             const uploadPath = './src/img'
@@ -53,7 +53,7 @@ export class UploadFiles {
         }
     }
 
-    public static updateUploadItem = async (req: Request, payload: IGetUpdateUploadById, res: Response) => {
+    public static updateUploadItem = async (req: Request, payload: IGetUpdateUploadById) => {
         try {
             const item = await datasource.getRepository(UploadItem).findOneBy({
                 id: payload.id
@@ -78,22 +78,24 @@ export class UploadFiles {
         }
     }
 
-    public static deleteUploadItem = async (req: Request, payload: IDeleteUploadById, res: Response) => {
+    public static deleteUploadItem = async (req: Request, payload: IDeleteUploadById) => {
         try {
+
+            const reqparams: any = payload
             const findFile: any = await datasource.getRepository(UploadItem).findOneBy({
-                id: payload.id
+                id: reqparams.id
             })
-            await fs.unlinkSync(`./src/img/${findFile.path}`)
+            const write = await fs.unlinkSync(`./src/img/${findFile.path}`)
             const item = await datasource.getRepository(UploadItem).delete({
-                id: payload.id
+                id: reqparams.id
             })
             if (item.affected === 0) {
                 return {
-                    message: `upload item id ${payload.id} not exits`
+                    message: `upload item id ${reqparams.id} not exits`
                 }
             } else {
                 return {
-                    message: `upload item id ${payload.id} delete successfully`
+                    message: `upload item id ${reqparams.id} delete successfully`
                 }
             }
         } catch (err: any) {
